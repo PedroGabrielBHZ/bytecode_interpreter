@@ -1,0 +1,7 @@
+# Teste com código não otimizado
+PUSH 10
+STORE result
+LOAD result
+DUP
+PRINT
+HALT

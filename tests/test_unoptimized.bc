@@ -1,0 +1,13 @@
+# Teste com código não otimizado
+PUSH 5
+POP
+PUSH 3
+PUSH 7
+ADD
+STORE result
+LOAD result
+LOAD result
+PRINT
+HALT
+PUSH 999  # Código morto
+PRINT     # Código morto

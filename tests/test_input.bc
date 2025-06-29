@@ -1,0 +1,7 @@
+# Teste de entrada do usuário
+READ
+STORE input
+LOAD input
+LOAD input
+MUL
+PRINT
