@@ -8,6 +8,16 @@ class BytecodeOptimizer:
         self.labels = {}
 
     def load_program(self, bytecode: str) -> None:
+        """
+        Parses a string of bytecode instructions, storing them as a list and mapping label names to their line indices.
+
+        Args:
+            bytecode (str): The bytecode program as a string, with each instruction or label on a separate line.
+
+        Side Effects:
+            Updates self.instructions with the parsed instructions and labels.
+            Updates self.labels with mappings from label names to their corresponding line indices.
+        """
         lines = bytecode.strip().split("\n")
         self.instructions = []
         self.labels = {}
@@ -19,6 +29,15 @@ class BytecodeOptimizer:
             self.instructions.append(line)
 
     def optimize_push_pop(self) -> int:
+        """
+        Optimizes the instruction list by removing consecutive "PUSH <value>" followed by "POP" instructions.
+
+        This method scans through the list of instructions and eliminates any pair where a "PUSH" instruction
+        is immediately followed by a "POP" instruction, as this sequence has no effect on the stack.
+
+        Returns:
+            int: The total number of instructions removed from the list (counting both "PUSH" and "POP" instructions).
+        """
         optimized = []
         i = 0
         removed_count = 0
@@ -36,6 +55,17 @@ class BytecodeOptimizer:
         return removed_count
 
     def optimize_redundant_loads(self) -> int:
+        """
+        Optimizes redundant consecutive LOAD instructions in the instruction list.
+
+        This method scans through the list of instructions and replaces consecutive
+        LOAD operations for the same variable with a single LOAD followed by the appropriate
+        number of DUP instructions. This reduces redundant memory accesses by duplicating
+        the value on the stack instead of reloading it.
+
+        Returns:
+            int: The number of redundant LOAD instructions removed.
+        """
         optimized = []
         i = 0
         removed_count = 0
@@ -74,6 +104,13 @@ class BytecodeOptimizer:
         return removed_count
 
     def optimize_dead_code(self) -> int:
+        """
+        Removes dead code from the instruction list by eliminating instructions that appear after
+        unconditional control flow changes (such as 'HALT', 'RET', or 'JMP') until the next label.
+
+        Returns:
+            int: The number of instructions removed as dead code.
+        """
         optimized = []
         removed_count = 0
         skip_until_label = False
@@ -94,6 +131,18 @@ class BytecodeOptimizer:
         return removed_count
 
     def optimize_constant_folding(self) -> int:
+        """
+        Optimizes the instruction list by performing constant folding on consecutive PUSH and arithmetic operations.
+
+        This method scans through the list of instructions and looks for patterns where two consecutive
+        PUSH instructions are immediately followed by an arithmetic operation (ADD, SUB, MUL, DIV, MOD).
+        If both PUSH instructions contain integer constants, the arithmetic operation is computed at
+        compile-time, and the three instructions are replaced with a single PUSH instruction containing
+        the result. The method skips folding for division or modulo by zero.
+
+        Returns:
+            int: The number of instructions removed from the instruction list as a result of constant folding.
+        """
         optimized = []
         i = 0
         removed_count = 0
