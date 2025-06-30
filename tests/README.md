@@ -1,58 +1,56 @@
 # Bytecode Interpreter Tests
 
-This directory contains all test files for the bytecode interpreter.
+This directory contains all test files and unittests for the bytecode interpreter and optimizer.
 
 ## Test Files
 
-### Basic Tests (based on the specification):
-- `test1.bc` - Basic operations with variables (result: 20)
-- `test2.bc` - If/else conditional structure (result: 1)
-- `test3.bc` - While loop structure (result: 5,4,3,2,1)
-- `test4.bc` - Function call with parameters (result: 7)
-- `test5.bc` - Function with return (result: 10)
-
-### Special Tests:
+### Bytecode Programs:
+- `test1.bc` - Basic operations with variables (expected output: 20)
+- `test2.bc` - If/else conditional structure (expected output: 1)
+- `test3.bc` - While loop structure (expected output: 5,4,3,2,1)
+- `test4.bc` - Function call with parameters (expected output: 7)
+- `test5.bc` - Function with return (expected output: 10)
 - `test_input.bc` - Test with user input (READ)
-- `test_unoptimized.bc` - Non-optimized code to demonstrate optimizations
-- `test_optimized.bc` - Result of optimization
+- `test_unoptimized.bc` - Non-optimized code for optimizer tests
+- `test_optimized.bc` - Example of optimized output
 
-### Test Scripts:
-- `run_tests.py` - Automated script to run all tests
-- `test_input_example.py` - Example of how to test interactive input
+### Python Test Files:
+- `test_interpreter.py` - Unittests for the interpreter, including all .bc files above
+- (Add more `test_*.py` files for additional tests)
 
-## How to Run
+## How to Run Tests
 
-### Run a specific test:
+### Run all unittests (recommended):
 ```bash
-cd ..
+python -m unittest discover -s tests -p "test_*.py"
+```
+
+### Run a specific test file:
+```bash
+python -m unittest tests.test_interpreter
+```
+
+### Run a .bc file manually:
+```bash
 python bytecode_interpreter.py tests/test1.bc
 ```
 
-### Run all tests:
+### Run the optimizer:
 ```bash
-cd tests
-python run_tests.py
-```
-
-### Test interactive input:
-```bash
-cd ..
-echo "5" | python bytecode_interpreter.py tests/test_input.bc
-```
-
-### Test optimizer:
-```bash
-cd ..
-python bytecode_optimizer.py tests/test_unoptimized.bc tests/test_optimized_new.bc
+python bytecode_optimizer.py tests/test_unoptimized.bc outputs/optimized.bc
 ```
 
 ## Expected Results
 
-| Test | Expected Result |
-|------|----------------|
-| test1.bc | 20 |
-| test2.bc | 1 |
-| test3.bc | 5<br>4<br>3<br>2<br>1 |
-| test4.bc | 7 |
-| test5.bc | 10 |
-| test_input.bc (input: 5) | 25 |
+| Test         | Expected Output      |
+|--------------|---------------------|
+| test1.bc     | 20                  |
+| test2.bc     | 1                   |
+| test3.bc     | 5\n4\n3\n2\n1        |
+| test4.bc     | 7                   |
+| test5.bc     | 10                  |
+| test_input.bc (input: 5) | 25      |
+
+## Notes
+- All output files are saved in the `outputs/` directory.
+- The GUI can also be used to run and optimize tests interactively.
