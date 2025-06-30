@@ -134,11 +134,16 @@ HALT">{{ code or '' }}</textarea>
                     <div class="mt-3">
                         <h6>Optimization Statistics:</h6>
                         <ul class="list-unstyled">
-                            <li><i class="fas fa-arrow-right text-primary"></i> Push/Pop pairs removed: {{ optimization_result.stats.push_pop_removed }}</li>
-                            <li><i class="fas fa-arrow-right text-primary"></i> Redundant loads removed: {{ optimization_result.stats.redundant_loads_removed }}</li>
-                            <li><i class="fas fa-arrow-right text-primary"></i> Dead code removed: {{ optimization_result.stats.dead_code_removed }}</li>
-                            <li><i class="fas fa-arrow-right text-primary"></i> Constant folding applied: {{ optimization_result.stats.constant_folding_removed }}</li>
-                            <li><strong><i class="fas fa-arrow-right text-success"></i> Total instructions removed: {{ optimization_result.stats.total_removed }}</strong></li>
+                            <li><i class="fas fa-arrow-right text-primary"></i> Push/Pop pairs removed: {{
+                                optimization_result.stats.push_pop_removed }}</li>
+                            <li><i class="fas fa-arrow-right text-primary"></i> Redundant loads removed: {{
+                                optimization_result.stats.redundant_loads_removed }}</li>
+                            <li><i class="fas fa-arrow-right text-primary"></i> Dead code removed: {{
+                                optimization_result.stats.dead_code_removed }}</li>
+                            <li><i class="fas fa-arrow-right text-primary"></i> Constant folding applied: {{
+                                optimization_result.stats.constant_folding_removed }}</li>
+                            <li><strong><i class="fas fa-arrow-right text-success"></i> Total instructions removed: {{
+                                    optimization_result.stats.total_removed }}</strong></li>
                         </ul>
                     </div>
                     {% endif %}

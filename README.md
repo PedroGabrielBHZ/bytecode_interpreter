@@ -1,6 +1,6 @@
 # Bytecode Interpreter
 
-[![Test and Deploy](https://github.com/yourusername/bytecode-interpreter/actions/workflows/python-tests.yml/badge.svg)](https://github.com/yourusername/bytecode-interpreter/actions/workflows/python-tests.yml)
+[![Test and Deploy](https://github.com/PedroGabrielBHZ/bytecode-interpreter/actions/workflows/python-tests.yml/badge.svg)](https://github.com/yourusername/bytecode-interpreter/actions/workflows/python-tests.yml)
 [![Deploy Status](https://img.shields.io/badge/deployment-automatic-brightgreen)](https://fly.io)
 
 A stack-based bytecode interpreter and optimizer with a graphical interface, developed for the Compilers course.
