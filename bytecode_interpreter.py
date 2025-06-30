@@ -487,9 +487,9 @@ class BytecodeInterpreter:
         Args:
             args: Unused argument, included for opcode interface consistency.
 
-        Stack Effect:
-            Consumes: 2 values (a, b)
-            Produces: 1 value (1 if a <= b else 0)
+        Stack Behavior:
+            Before: [..., a, b]
+            After:  [..., (1 if a <= b else 0)]
         """
         if len(self.stack) >= 2:
             b = self.stack.pop()
