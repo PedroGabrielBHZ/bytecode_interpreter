@@ -21,12 +21,20 @@ class BytecodeOptimizer:
         lines = bytecode.strip().split("\n")
         self.instructions = []
         self.labels = {}
+
         for i, line in enumerate(lines):
             line = line.strip()
+
+            if not line or line.startswith("#"):
+                self.instructions.append("")
+                continue
+
             if line.endswith(":"):
                 label_name = line[:-1].strip()
                 self.labels[label_name] = i
-            self.instructions.append(line)
+                self.instructions.append("")
+            else:
+                self.instructions.append(line)
 
     def optimize_push_pop(self) -> int:
         """
@@ -187,6 +195,20 @@ class BytecodeOptimizer:
         return removed_count
 
     def optimize(self) -> Tuple[str, dict]:
+        """
+        Optimizes the current list of bytecode instructions by applying optimization passes.
+
+        The method performs the following optimizations in sequence:
+            - Removes redundant push/pop instruction pairs.
+            - Eliminates redundant load instructions.
+            - Removes dead code that does not affect program output.
+            - Performs constant folding to simplify constant expressions.
+
+        Returns:
+            Tuple[str, dict]: A tuple containing:
+                - The optimized bytecode as a single string.
+                - A dictionary with statistics about the number of instructions removed by each optimization pass and the total removed.
+        """
         stats = {
             "push_pop_removed": 0,
             "redundant_loads_removed": 0,
