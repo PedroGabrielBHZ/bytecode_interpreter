@@ -4,6 +4,7 @@ import subprocess
 import os
 import sys
 
+# dpi workaround
 if sys.platform == "win32":
     try:
         import ctypes
@@ -15,6 +16,20 @@ if sys.platform == "win32":
 
 class BytecodeGUI:
     def __init__(self, root):
+        """
+        Initializes the Bytecode GUI application.
+
+        Args:
+            root (tk.Tk): The root window of the Tkinter application.
+
+        Attributes:
+            root (tk.Tk): The main application window.
+            filename (str or None): The path to the currently loaded file, if any.
+            optimized_filename (str or None): The path to the optimized file, if any.
+
+        Side Effects:
+            Sets the window title and initializes the GUI widgets.
+        """
         self.root = root
         self.root.title("Bytecode GUI")
         self.filename = None
@@ -22,6 +37,15 @@ class BytecodeGUI:
         self.create_widgets()
 
     def create_widgets(self):
+        """
+        Creates and arranges all GUI widgets for the bytecode GUI application.
+        This method sets up the main interface, including:
+        - A frame containing buttons for loading, optimizing, saving, running, and clearing bytecode files.
+        - An input field for user program input.
+        - Three main text areas: one for displaying the original code, one for the optimized code, and one for program output.
+        - A status bar at the bottom for displaying messages to the user.
+        All widgets are packed and configured with appropriate layout and styling options.
+        """
         frame = tk.Frame(self.root)
         frame.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
 
@@ -41,14 +65,14 @@ class BytecodeGUI:
             btn_frame,
             text="Run Original",
             command=self.run_original,
-            bg="#4CAF50",
+            bg="#777100",
             fg="white",
         ).pack(side=tk.LEFT, padx=2)
         tk.Button(
             btn_frame,
             text="Run Optimized",
             command=self.run_optimized,
-            bg="#2196F3",
+            bg="#F32121",
             fg="white",
         ).pack(side=tk.LEFT, padx=2)
         tk.Button(btn_frame, text="Clear Output", command=self.clear_outputs).pack(
@@ -101,6 +125,18 @@ class BytecodeGUI:
         self.status.configure(font=(None, 11))
 
     def load_bc(self):
+        """
+        Opens a file dialog for the user to select a bytecode (.bc) file, loads its contents into the original text widget,
+        updates the status bar with the loaded filename, clears the optimized text widget and output areas, and resets
+        related state variables.
+
+        Side Effects:
+            - Updates self.text_original with the loaded file's content.
+            - Updates self.status with the loaded filename.
+            - Clears and disables self.text_optimized.
+            - Resets self.optimized_filename to None.
+            - Calls self.clear_outputs() to clear output widgets.
+        """
         filename = filedialog.askopenfilename(filetypes=[("Bytecode Files", "*.bc")])
         if filename:
             with open(filename, "r", encoding="utf-8") as f:
@@ -116,6 +152,24 @@ class BytecodeGUI:
             self.clear_outputs()
 
     def run_optimizer(self):
+        """
+        Runs the bytecode optimizer on the currently loaded .bc file.
+
+        This method performs the following steps:
+        1. Checks if a file is loaded; if not, shows a warning message.
+        2. Writes the contents of the original code text widget to a temporary input file.
+        3. Invokes the bytecode optimizer script (`bytecode_optimizer.py`) as a subprocess,
+           passing the temporary input and output file paths.
+        4. If optimization is successful, reads the optimized code from the output file and
+           displays it in the optimized code text widget (set to read-only).
+        5. Updates the status label with the result of the operation.
+        6. Handles and displays any errors that occur during the process.
+
+        Side Effects:
+            - Updates GUI widgets (status label, optimized code text widget).
+            - Writes temporary files to the "outputs" directory.
+            - Sets `self.optimized_filename` to the path of the optimized output file.
+        """
         if not self.filename:
             messagebox.showwarning("Warning", "Load a .bc file first!")
             return
@@ -144,6 +198,17 @@ class BytecodeGUI:
             self.status.config(text=f"Error: {e}")
 
     def save_optimized(self):
+        """
+        Saves the optimized bytecode to a user-specified file.
+
+        If there is no optimized file available, displays an informational message.
+        Otherwise, opens a file dialog for the user to select the save location and filename.
+        Copies the contents of the optimized bytecode file to the chosen destination.
+        Updates the status label with the path where the file was saved.
+
+        Returns:
+            None
+        """
         if not self.optimized_filename:
             messagebox.showinfo("Info", "No optimized code to save!")
             return
@@ -160,6 +225,21 @@ class BytecodeGUI:
             self.status.config(text=f"Optimized file saved to: {save_path}")
 
     def run_original(self):
+        """
+        Runs the original bytecode program loaded in the GUI.
+
+        This method checks if a filename has been loaded. If not, it shows a warning message.
+        Otherwise, it saves the current contents of the original bytecode text widget to a temporary
+        file and then executes the program using that file.
+
+        Steps:
+            1. Verifies that a .bc file has been loaded.
+            2. Writes the contents of the original bytecode text widget to 'outputs/temp_original.bc'.
+            3. Calls the execute_program method with the temporary file and the label "Original".
+
+        Raises:
+            Shows a warning dialog if no file is loaded.
+        """
         if not self.filename:
             messagebox.showwarning("Warning", "Load a .bc file first!")
             return
@@ -169,12 +249,33 @@ class BytecodeGUI:
         self.execute_program(temp_input, "Original")
 
     def run_optimized(self):
+        """
+        Executes the optimized version of the program if available.
+
+        Checks if the optimized filename is set. If not, displays a warning message prompting the user to run the optimizer first.
+        If the optimized filename exists, executes the program using the optimized file.
+
+        Returns:
+            None
+        """
         if not self.optimized_filename:
             messagebox.showwarning("Warning", "Run the optimizer first!")
             return
         self.execute_program(self.optimized_filename, "Optimized")
 
     def execute_program(self, filename, program_type):
+        """
+        Executes a bytecode program using an external interpreter and displays the output in the GUI.
+        Args:
+            filename (str): The path to the bytecode file to execute.
+            program_type (str): A label indicating the type of program (e.g., "Main", "Test") for display purposes.
+        Behavior:
+            - Retrieves user input from the input_entry widget.
+            - Runs 'bytecode_interpreter.py' with the given filename, passing user input if provided.
+            - Captures and displays standard output and error in the text_output widget.
+            - Updates the status label with execution results or errors.
+            - Handles timeouts and unexpected exceptions gracefully.
+        """
         user_input = self.input_entry.get()
 
         try:
@@ -220,6 +321,13 @@ class BytecodeGUI:
             )
 
     def clear_outputs(self):
+        """
+        Clears the contents of the text output widget and updates the status label.
+
+        This method enables the text output widget, deletes all its contents,
+        disables it again to prevent user editing, and sets the status label to
+        indicate that the outputs have been cleared.
+        """
         self.text_output.config(state=tk.NORMAL)
         self.text_output.delete(1.0, tk.END)
         self.text_output.config(state=tk.DISABLED)
