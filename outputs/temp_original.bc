@@ -1,9 +1,13 @@
-PUSH 10
-STORE a
-LOAD a
-PUSH 2
-MUL
-STORE b
-LOAD b
+PUSH 5
+POP
+PUSH 3
+PUSH 7
+ADD
+STORE result
+LOAD result
+LOAD result
 PRINT
+HALT
+PUSH 999  # Código morto
+PRINT     # Código morto
 
