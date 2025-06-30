@@ -1,5 +1,6 @@
 import sys
 from typing import List, Dict, Tuple, Optional
+import time
 
 
 class BytecodeInterpreter:
@@ -146,6 +147,8 @@ class BytecodeInterpreter:
         """
         if self.stack:
             self.stack.pop()
+        else:
+            raise RuntimeError("Stack Underflow.")
 
     def op_dup(self, args: List[str]) -> None:
         """
@@ -566,6 +569,8 @@ class BytecodeInterpreter:
         """
         if self.stack:
             value = self.stack[-1]
+            if value > 2147483647:
+                raise RuntimeError("OVERFLOW!")
             print(value)
         else:
             print(0)
@@ -592,11 +597,17 @@ class BytecodeInterpreter:
         For each instruction, it parses and executes the opcode and its arguments.
         Handles runtime errors by printing an error message with the current line number and halts execution.
         Skips empty instructions by advancing the program counter.
+        Raises a RuntimeError if execution takes more than 2 seconds (infinite loop protection).
         """
         self.program_counter = 0
         self.halted = False
+        start_time = time.time()
 
         while not self.halted and self.program_counter < len(self.instructions):
+            if time.time() - start_time > 2:
+                raise RuntimeError(
+                    "Infinite loop detected: execution exceeded 2 seconds."
+                )
             instruction = self.instructions[self.program_counter]
 
             if instruction:
