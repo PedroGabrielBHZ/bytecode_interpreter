@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <p class="lead text-muted">
+            Write, run, and optimize bytecode programs in your browser.
+        </p>
+    </div>
+</div>
+
+<form method="POST" action="{{ url_for('run_bytecode') }}">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-edit"></i> Bytecode Editor
+                    </h5>
+                    <div class="btn-group btn-group-sm">
+                        <a href="{{ url_for('load_example') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-file-code"></i> Load Example
+                        </a>
+                        <a href="{{ url_for('examples') }}" class="btn btn-outline-info">
+                            <i class="fas fa-book"></i> More Examples
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <textarea name="code" class="form-control code-editor border-0" rows="20" placeholder="Enter your bytecode here...
+# Example:
+PUSH 10
+PUSH 20
+ADD
+PRINT
+HALT">{{ code or '' }}</textarea>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-play"></i> Run Code
+                        </button>
+                        <button type="submit" formaction="{{ url_for('optimize_bytecode') }}" class="btn btn-success">
+                            <i class="fas fa-magic"></i> Optimize
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="clearEditor()">
+                            <i class="fas fa-trash"></i> Clear
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            {% if result %}
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-terminal"></i> Execution Results
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if result.success %}
+                    <div class="success-section p-3 rounded">
+                        <h6><i class="fas fa-check-circle text-success"></i> Output:</h6>
+                        <pre class="mb-0"><code>{{ result.output or 'No output' }}</code></pre>
+                    </div>
+                    {% else %}
+                    <div class="error-section p-3 rounded">
+                        <h6><i class="fas fa-exclamation-triangle text-danger"></i> Error:</h6>
+                        <pre class="mb-0"><code>{{ result.errors }}</code></pre>
+                    </div>
+                    {% endif %}
+
+                    {% if result.errors and result.success %}
+                    <div class="error-section p-3 rounded mt-2">
+                        <h6><i class="fas fa-exclamation-triangle text-warning"></i> Warnings:</h6>
+                        <pre class="mb-0"><code>{{ result.errors }}</code></pre>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle"></i> Interpreter State
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="state-display">
+                        <h6>Stack:</h6>
+                        <code>{{ result.stack | join(', ') if result.stack else 'Empty' }}</code>
+                    </div>
+
+                    <div class="state-display">
+                        <h6>Variables:</h6>
+                        {% if result.variables %}
+                        {% for var, value in result.variables.items() %}
+                        <div><code>{{ var }} = {{ value }}</code></div>
+                        {% endfor %}
+                        {% else %}
+                        <code>None</code>
+                        {% endif %}
+                    </div>
+
+                    <div class="state-display">
+                        <h6>Status:</h6>
+                        <code>
+                            {% if result.halted %}
+                                <span class="text-success">Halted</span>
+                            {% else %}
+                                <span class="text-warning">Running</span>
+                            {% endif %}
+                        </code>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if optimization_result %}
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-magic"></i> Optimization Results
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if optimization_result.success %}
+                    <div class="alert alert-success">
+                        <i class="fas fa-check"></i> Code optimized successfully!
+                    </div>
+                    {% if optimization_result.stats %}
+                    <div class="mt-3">
+                        <h6>Optimization Statistics:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-arrow-right text-primary"></i> Push/Pop pairs removed: {{ optimization_result.stats.push_pop_removed }}</li>
+                            <li><i class="fas fa-arrow-right text-primary"></i> Redundant loads removed: {{ optimization_result.stats.redundant_loads_removed }}</li>
+                            <li><i class="fas fa-arrow-right text-primary"></i> Dead code removed: {{ optimization_result.stats.dead_code_removed }}</li>
+                            <li><i class="fas fa-arrow-right text-primary"></i> Constant folding applied: {{ optimization_result.stats.constant_folding_removed }}</li>
+                            <li><strong><i class="fas fa-arrow-right text-success"></i> Total instructions removed: {{ optimization_result.stats.total_removed }}</strong></li>
+                        </ul>
+                    </div>
+                    {% endif %}
+                    {% else %}
+                    <div class="alert alert-danger">
+                        <i class="fas fa-times"></i> {{ optimization_result.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-question-circle"></i> Instructions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="accordion" id="instructionsAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#basicOps">
+                                    Basic Operations
+                                </button>
+                            </h2>
+                            <div id="basicOps" class="accordion-collapse collapse"
+                                data-bs-parent="#instructionsAccordion">
+                                <div class="accordion-body">
+                                    <small>
+                                        <strong>PUSH n</strong> - Push number onto stack<br>
+                                        <strong>POP</strong> - Remove top from stack<br>
+                                        <strong>ADD</strong> - Add top two values<br>
+                                        <strong>SUB</strong> - Subtract top two values<br>
+                                        <strong>MUL</strong> - Multiply top two values<br>
+                                        <strong>DIV</strong> - Divide top two values<br>
+                                        <strong>PRINT</strong> - Print top of stack<br>
+                                        <strong>HALT</strong> - Stop execution
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#controlFlow">
+                                    Control Flow
+                                </button>
+                            </h2>
+                            <div id="controlFlow" class="accordion-collapse collapse"
+                                data-bs-parent="#instructionsAccordion">
+                                <div class="accordion-body">
+                                    <small>
+                                        <strong>JMP label</strong> - Jump to label<br>
+                                        <strong>JZ label</strong> - Jump if top is zero<br>
+                                        <strong>JNZ label</strong> - Jump if top is not zero<br>
+                                        <strong>CALL label</strong> - Call function<br>
+                                        <strong>RET</strong> - Return from function<br>
+                                        <strong>label:</strong> - Define a label
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#variables">
+                                    Variables
+                                </button>
+                            </h2>
+                            <div id="variables" class="accordion-collapse collapse"
+                                data-bs-parent="#instructionsAccordion">
+                                <div class="accordion-body">
+                                    <small>
+                                        <strong>STORE var</strong> - Store top of stack in variable<br>
+                                        <strong>LOAD var</strong> - Load variable onto stack<br>
+                                        <strong>EQ</strong> - Compare equality<br>
+                                        <strong>LT</strong> - Less than comparison<br>
+                                        <strong>GT</strong> - Greater than comparison
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function clearEditor() {
+        document.querySelector('textarea[name="code"]').value = '';
+    }
+
+    // Auto-resize textarea
+    document.addEventListener('DOMContentLoaded', function () {
+        const textarea = document.querySelector('textarea[name="code"]');
+        if (textarea) {
+            textarea.addEventListener('input', function () {
+                this.style.height = 'auto';
+                this.style.height = Math.max(this.scrollHeight, 400) + 'px';
+            });
+        }
+    });
+</script>
+{% endblock %}

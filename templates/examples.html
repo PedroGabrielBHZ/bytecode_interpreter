@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Examples - Bytecode Interpreter{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="fas fa-book"></i> Bytecode Examples
+        </h1>
+        <p class="lead text-muted">
+            Explore these example programs to learn bytecode programming.
+        </p>
+    </div>
+</div>
+
+<div class="row">
+    {% for example in examples %}
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-code"></i> {{ example.name }}
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text text-muted mb-3">{{ example.description }}</p>
+                <div class="bg-light p-3 rounded">
+                    <pre class="mb-0"><code class="language-assembly">{{ example.code }}</code></pre>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('load_specific_example', example_id=loop.index0) }}" class="btn btn-primary">
+                    <i class="fas fa-play"></i> Load & Run
+                </a>
+                <button class="btn btn-outline-secondary" onclick="copyToClipboard({{ loop.index0 }})">
+                    <i class="fas fa-copy"></i> Copy Code
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-graduation-cap"></i> Learning Guide
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Basic Concepts:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-chevron-right text-primary"></i> Stack-based execution</li>
+                            <li><i class="fas fa-chevron-right text-primary"></i> Variables and storage</li>
+                            <li><i class="fas fa-chevron-right text-primary"></i> Control flow with jumps</li>
+                            <li><i class="fas fa-chevron-right text-primary"></i> Function calls and returns</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Advanced Features:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-chevron-right text-success"></i> Code optimization</li>
+                            <li><i class="fas fa-chevron-right text-success"></i> Error handling</li>
+                            <li><i class="fas fa-chevron-right text-success"></i> Debugging with state inspection</li>
+                            <li><i class="fas fa-chevron-right text-success"></i> Complex arithmetic operations</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left"></i> Back to Editor
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden pre elements for copying -->
+{% for example in examples %}
+<pre id="code-{{ loop.index0 }}" style="display: none;">{{ example.code }}</pre>
+{% endfor %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function copyToClipboard(exampleId) {
+        const codeElement = document.getElementById('code-' + exampleId);
+        const code = codeElement.textContent;
+
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(code).then(function () {
+                showCopySuccess();
+            });
+        } else {
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = code;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            showCopySuccess();
+        }
+    }
+
+    function showCopySuccess() {
+        // Create a temporary alert
+        const alert = document.createElement('div');
+        alert.className = 'alert alert-success alert-dismissible position-fixed';
+        alert.style.top = '20px';
+        alert.style.right = '20px';
+        alert.style.zIndex = '9999';
+        alert.innerHTML = `
+        <i class="fas fa-check"></i> Code copied to clipboard!
+        <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+    `;
+        document.body.appendChild(alert);
+
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+            if (alert.parentElement) {
+                alert.remove();
+            }
+        }, 3000);
+    }
+</script>
+{% endblock %}
