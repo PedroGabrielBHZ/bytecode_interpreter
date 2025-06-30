@@ -17,6 +17,10 @@ COPY . .
 # Create outputs directory
 RUN mkdir -p outputs
 
+# Set environment variables for production
+ENV FLASK_ENV=production
+ENV PYTHONPATH=/app
+
 # Expose port
 EXPOSE 8080
 

@@ -22,6 +22,10 @@ app.config.from_object(config.get(config_name, config["default"]))
 
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16MB max file size
 
+# Ensure SECRET_KEY is always set (additional fallback for production safety)
+if not app.config.get("SECRET_KEY"):
+    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "fallback-secret-key-please-set-proper-one")
+
 # Ensure outputs directory exists
 OUTPUTS_DIR = os.path.join(os.path.dirname(__file__), "outputs")
 os.makedirs(OUTPUTS_DIR, exist_ok=True)

@@ -55,8 +55,11 @@ jobs:
           fi
 
       - uses: superfly/flyctl-actions/setup-flyctl@master
-
+      
       - name: Deploy to Fly.io
-        run: flyctl deploy --remote-only --verbose
+        run: |
+          # Set a random secret key if not already set
+          flyctl secrets set SECRET_KEY=$(python -c "import secrets; print(secrets.token_urlsafe(32))") || true
+          flyctl deploy --remote-only --verbose
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

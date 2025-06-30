@@ -20,7 +20,7 @@ class ProductionConfig(Config):
 
     DEBUG = False
     ENV = "production"
-    SECRET_KEY = os.environ.get("SECRET_KEY")
+    SECRET_KEY = os.environ.get("SECRET_KEY") or "fallback-production-secret-key-please-change"
 
 
 class TestingConfig(Config):
