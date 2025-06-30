@@ -1,155 +1,155 @@
-# Interpretador Bytecode
+# Bytecode Interpreter
 
-Este é um interpretador para uma linguagem bytecode baseada em pilha, desenvolvido como trabalho prático da disciplina de Compiladores.
+This is a stack-based bytecode interpreter, developed as a practical assignment for the Compilers course.
 
-## Interface Gráfica (GUI)
+## Graphical User Interface (GUI)
 
-O projeto inclui uma interface gráfica amigável para facilitar o uso do interpretador e otimizador.
+The project includes a user-friendly graphical interface to facilitate the use of the interpreter and optimizer.
 
-### Como usar a GUI:
+### How to use the GUI:
 ```bash
 python bytecode_gui.py
 ```
 
-### Funcionalidades da GUI:
+### GUI Features:
 
-- **Carregar arquivo .bc**: Abre um arquivo bytecode e exibe seu conteúdo em uma caixa de texto editável
-- **Executar Otimizador**: Processa o código carregado através do otimizador e mostra o resultado
-- **Comparar**: Abre uma janela para comparar lado a lado o código original e otimizado
-- **Salvar Otimizado**: Salva o código otimizado em um novo arquivo
-- **Executar Original**: Executa o programa original e mostra a saída
-- **Executar Otimizado**: Executa o programa otimizado e mostra a saída
-- **Campo de Entrada**: Permite fornecer entrada para programas que usam `READ`
-- **Limpar Saídas**: Limpa a área de saída dos programas
+- **Load .bc file**: Opens a bytecode file and displays its content in an editable text box
+- **Run Optimizer**: Processes the loaded code through the optimizer and shows the result
+- **Compare**: Opens a window to compare the original and optimized code side by side
+- **Save Optimized**: Saves the optimized code to a new file
+- **Run Original**: Runs the original program and shows the output
+- **Run Optimized**: Runs the optimized program and shows the output
+- **Input Field**: Allows you to provide input for programs that use `READ`
+- **Clear Outputs**: Clears the program output area
 
-A interface é dividida em três áreas principais:
-- **Código Original** (editável)
-- **Código Otimizado** (somente leitura)
-- **Saída dos Programas** (com campo de entrada)
+The interface is divided into three main areas:
+- **Original Code** (editable)
+- **Optimized Code** (read-only)
+- **Program Output** (with input field)
 
-## Como usar (Linha de Comando)
+## How to Use (Command Line)
 
-### Executar a partir de arquivo:
+### Run from file:
 ```bash
 python bytecode_interpreter.py test1.bc
 ```
 
-### Executar a partir da entrada padrão:
+### Run from standard input:
 ```bash
 python bytecode_interpreter.py < test1.bc
 ```
 
-ou
+or
 
 ```bash
 cat test1.bc | python bytecode_interpreter.py
 ```
 
-## Otimizador (Funcionalidade Extra - 4pts)
+## Optimizer (Extra Feature - 4pts)
 
-O projeto inclui um otimizador que remove instruções redundantes sem alterar a semântica:
+The project includes an optimizer that removes redundant instructions without changing the semantics:
 
-### Como usar o otimizador:
+### How to use the optimizer:
 ```bash
 python bytecode_optimizer.py input.bc output.bc
 ```
 
-### Otimizações implementadas:
+### Implemented Optimizations:
 
-1. **Remoção de PUSH/POP redundantes**: Remove sequências `PUSH valor` seguidas imediatamente de `POP`
-2. **Remoção de LOADs redundantes**: Remove LOADs consecutivos da mesma variável, substituindo por `DUP`
-3. **Remoção de código morto**: Remove código após `HALT`, `RET` ou `JMP` incondicional
-4. **Constant folding**: Calcula operações aritméticas com constantes em tempo de compilação
+1. **Remove redundant PUSH/POP**: Removes `PUSH value` sequences immediately followed by `POP`
+2. **Remove redundant LOADs**: Removes consecutive LOADs of the same variable, replacing with `DUP`
+3. **Dead code elimination**: Removes code after `HALT`, `RET`, or unconditional `JMP`
+4. **Constant folding**: Computes arithmetic operations with constants at compile time
 
-### Exemplo:
+### Example:
 ```bash
 python bytecode_optimizer.py test_unoptimized.bc test_optimized.bc
 ```
 
-## Arquivos do Projeto
+## Project Files
 
-- `bytecode_interpreter.py` - Interpretador principal
-- `bytecode_optimizer.py` - Otimizador de código
-- `bytecode_gui.py` - Interface gráfica
-- `run_tests.py` - Script para executar todos os testes
-- `tests/` - Diretório com arquivos de teste
+- `bytecode_interpreter.py` - Main interpreter
+- `bytecode_optimizer.py` - Code optimizer
+- `bytecode_gui.py` - Graphical interface
+- `run_tests.py` - Script to run all tests
+- `tests/` - Directory with test files
 
-## Resultados Esperados dos Testes
+## Expected Test Results
 
-| Teste | Resultado Esperado |
-|-------|-------------------|
+| Test | Expected Result |
+|------|----------------|
 | test1.bc | 20 |
 | test2.bc | 1 |
 | test3.bc | 5<br>4<br>3<br>2<br>1 |
 | test4.bc | 7 |
 | test5.bc | 10 |
-| test_input.bc (entrada: 5) | 25 |
+| test_input.bc (input: 5) | 25 |
 
-## Executar todos os testes
+## Run all tests
 
 ```bash
 python run_tests.py
 ```
 
-## Instruções suportadas
+## Supported Instructions
 
-### Operações aritméticas e de pilha:
-- `PUSH <val>` - Empilha um valor
-- `POP` - Desempilha um valor
-- `ADD` - Soma os dois valores do topo da pilha
-- `SUB` - Subtrai os dois valores do topo da pilha
-- `MUL` - Multiplica os dois valores do topo da pilha
-- `DIV` - Divide os dois valores do topo da pilha
-- `MOD` - Módulo dos dois valores do topo da pilha
-- `NEG` - Nega o valor do topo da pilha
-- `DUP` - Duplica o valor do topo da pilha
+### Arithmetic and Stack Operations:
+- `PUSH <val>` - Pushes a value onto the stack
+- `POP` - Pops a value from the stack
+- `ADD` - Adds the top two values on the stack
+- `SUB` - Subtracts the top two values on the stack
+- `MUL` - Multiplies the top two values on the stack
+- `DIV` - Divides the top two values on the stack
+- `MOD` - Modulo of the top two values on the stack
+- `NEG` - Negates the top value on the stack
+- `DUP` - Duplicates the top value on the stack
 
-### Variáveis:
-- `STORE <var>` - Armazena o valor do topo da pilha na variável
-- `LOAD <var>` - Carrega o valor da variável para a pilha
+### Variables:
+- `STORE <var>` - Stores the top value of the stack in a variable
+- `LOAD <var>` - Loads the value of a variable onto the stack
 
-### Fluxo de controle:
-- `JMP <addr>` - Salta para o endereço/label
-- `JZ <addr>` - Salta se o topo da pilha for zero
-- `JNZ <addr>` - Salta se o topo da pilha for diferente de zero
-- `HALT` - Para a execução
+### Control Flow:
+- `JMP <addr>` - Jumps to the address/label
+- `JZ <addr>` - Jumps if the top of the stack is zero
+- `JNZ <addr>` - Jumps if the top of the stack is not zero
+- `HALT` - Stops execution
 
-### Comparação:
-- `EQ` - Verifica igualdade
-- `NEQ` - Verifica desigualdade
-- `LT` - Menor que
-- `GT` - Maior que
-- `LE` - Menor ou igual
-- `GE` - Maior ou igual
+### Comparison:
+- `EQ` - Checks equality
+- `NEQ` - Checks inequality
+- `LT` - Less than
+- `GT` - Greater than
+- `LE` - Less than or equal
+- `GE` - Greater than or equal
 
-### Funções e E/S:
-- `CALL <addr>` - Chama função no endereço/label
-- `RET` - Retorna da função
-- `PRINT` - Imprime o valor do topo da pilha
-- `READ` - Lê um valor da entrada padrão
+### Functions and I/O:
+- `CALL <addr>` - Calls a function at the address/label
+- `RET` - Returns from a function
+- `PRINT` - Prints the top value of the stack
+- `READ` - Reads a value from standard input
 
 ### Labels:
-- `LABEL:` - Define um rótulo para saltos e chamadas
+- `LABEL:` - Defines a label for jumps and calls
 
-## Exemplos de uso
+## Usage Examples
 
-### Teste básico:
+### Basic test:
 ```bash
 python bytecode_interpreter.py test1.bc
 ```
-Saída esperada: `20`
+Expected output: `20`
 
-### Teste com condicional:
+### Conditional test:
 ```bash
 python bytecode_interpreter.py test2.bc
 ```
-Saída esperada: `1`
+Expected output: `1`
 
-### Teste com loop:
+### Loop test:
 ```bash
 python bytecode_interpreter.py test3.bc
 ```
-Saída esperada:
+Expected output:
 ```
 5
 4

@@ -1,30 +1,19 @@
-#!/usr/bin/env python3
-"""
-Interpretador Bytecode - Trabalho Prático Compiladores
-Universidade: Pontifícia Universidade Católica de Minas Gerais
-Disciplina: Compiladores
-Professor: Pedro Ramos
-"""
-
 import sys
-from typing import List, Dict, Any, Optional
-import re
+from typing import List, Dict
 
 
 class BytecodeInterpreter:
-    """Interpretador para linguagem bytecode baseada em pilha"""
 
     def __init__(self):
-        self.stack: List[int] = []  # Pilha principal
-        self.variables: Dict[str, int] = {}  # Memória das variáveis
-        self.instructions: List[str] = []  # Lista de instruções
-        self.program_counter: int = 0  # Contador de programa (PC)
-        self.labels: Dict[str, int] = {}  # Mapeamento de labels para endereços
-        self.call_stack: List[int] = []  # Pilha de chamadas para funções
+        self.stack: List[int] = []
+        self.variables: Dict[str, int] = {}
+        self.instructions: List[str] = []
+        self.program_counter: int = 0
+        self.labels: Dict[str, int] = {}
+        self.call_stack: List[int] = []
         self.halted: bool = False
 
     def load_program(self, bytecode: str) -> None:
-        """Carrega o programa bytecode e processa labels"""
         lines = bytecode.strip().split("\n")
         self.instructions = []
         self.labels = {}
@@ -32,21 +21,18 @@ class BytecodeInterpreter:
         for i, line in enumerate(lines):
             line = line.strip()
 
-            # Ignora linhas vazias e comentários
             if not line or line.startswith("#"):
                 self.instructions.append("")
                 continue
 
-            # Processa labels
             if line.endswith(":"):
                 label_name = line[:-1].strip()
                 self.labels[label_name] = i
-                self.instructions.append("")  # Label não é uma instrução executável
+                self.instructions.append("")
             else:
                 self.instructions.append(line)
 
     def parse_instruction(self, instruction: str) -> tuple:
-        """Parse uma instrução em opcode e argumentos"""
         if not instruction:
             return None, []
 
@@ -56,9 +42,6 @@ class BytecodeInterpreter:
         return opcode, args
 
     def execute_instruction(self, opcode: str, args: List[str]) -> None:
-        """Executa uma instrução específica"""
-
-        # Operações aritméticas e de pilha
         if opcode == "PUSH":
             value = int(args[0])
             self.stack.append(value)
@@ -94,7 +77,7 @@ class BytecodeInterpreter:
                 b = self.stack.pop()
                 a = self.stack.pop()
                 if b != 0:
-                    self.stack.append(a // b)  # Divisão inteira
+                    self.stack.append(a // b)
                 else:
                     raise RuntimeError("Division by zero")
 
@@ -112,7 +95,6 @@ class BytecodeInterpreter:
                 a = self.stack.pop()
                 self.stack.append(-a)
 
-        # Variáveis
         elif opcode == "STORE":
             if self.stack and args:
                 var_name = args[0]
@@ -127,12 +109,11 @@ class BytecodeInterpreter:
                 else:
                     raise RuntimeError(f"Undefined variable: {var_name}")
 
-        # Fluxo de controle
         elif opcode == "JMP":
             target = args[0]
             if target in self.labels:
                 self.program_counter = self.labels[target]
-                return  # Não incrementa PC
+                return
             else:
                 try:
                     self.program_counter = int(target)
@@ -173,7 +154,6 @@ class BytecodeInterpreter:
         elif opcode == "HALT":
             self.halted = True
 
-        # Comparação
         elif opcode == "EQ":
             if len(self.stack) >= 2:
                 b = self.stack.pop()
@@ -210,10 +190,8 @@ class BytecodeInterpreter:
                 a = self.stack.pop()
                 self.stack.append(1 if a >= b else 0)
 
-        # Funções e E/S
         elif opcode == "CALL":
             target = args[0]
-            # Empilha endereço de retorno
             self.call_stack.append(self.program_counter + 1)
             if target in self.labels:
                 self.program_counter = self.labels[target]
@@ -230,37 +208,35 @@ class BytecodeInterpreter:
                 self.program_counter = self.call_stack.pop()
                 return
             else:
-                self.halted = True  # Se não há mais calls, termina programa
+                self.halted = True
 
         elif opcode == "PRINT":
             if self.stack:
-                value = self.stack[-1]  # PRINT não remove da pilha
+                value = self.stack[-1]
                 print(value)
             else:
-                print(0)  # Se pilha vazia, imprime 0
+                print(0)
 
         elif opcode == "READ":
             try:
                 value = int(input())
                 self.stack.append(value)
             except (ValueError, EOFError):
-                self.stack.append(0)  # Se erro na leitura, empilha 0
+                self.stack.append(0)
 
         else:
             raise RuntimeError(f"Unknown instruction: {opcode}")
 
-        # Incrementa program counter
         self.program_counter += 1
 
     def run(self) -> None:
-        """Executa o programa bytecode"""
         self.program_counter = 0
         self.halted = False
 
         while not self.halted and self.program_counter < len(self.instructions):
             instruction = self.instructions[self.program_counter]
 
-            if instruction:  # Ignora instruções vazias
+            if instruction:
                 opcode, args = self.parse_instruction(instruction)
                 if opcode:
                     try:
@@ -275,7 +251,6 @@ class BytecodeInterpreter:
                 self.program_counter += 1
 
     def debug_state(self) -> None:
-        """Imprime estado atual para debug"""
         print(f"PC: {self.program_counter}")
         print(f"Stack: {self.stack}")
         print(f"Variables: {self.variables}")
@@ -284,9 +259,7 @@ class BytecodeInterpreter:
 
 
 def main():
-    """Função principal do interpretador"""
     if len(sys.argv) > 1:
-        # Lê de arquivo
         filename = sys.argv[1]
         try:
             with open(filename, "r", encoding="utf-8") as f:
@@ -298,10 +271,8 @@ def main():
             print(f"Error reading file: {e}", file=sys.stderr)
             sys.exit(1)
     else:
-        # Lê da entrada padrão
         bytecode = sys.stdin.read()
 
-    # Cria e executa interpretador
     interpreter = BytecodeInterpreter()
     interpreter.load_program(bytecode)
     interpreter.run()

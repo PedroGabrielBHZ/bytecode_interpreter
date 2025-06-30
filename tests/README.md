@@ -1,58 +1,58 @@
-# Testes do Interpretador Bytecode
+# Bytecode Interpreter Tests
 
-Este diretório contém todos os arquivos de teste para o interpretador bytecode.
+This directory contains all test files for the bytecode interpreter.
 
-## Arquivos de Teste
+## Test Files
 
-### Testes Básicos (baseados na especificação):
-- `test1.bc` - Operações básicas com variáveis (resultado: 20)
-- `test2.bc` - Estrutura condicional if/else (resultado: 1) 
-- `test3.bc` - Estrutura de repetição while (resultado: 5,4,3,2,1)
-- `test4.bc` - Chamada de função com parâmetros (resultado: 7)
-- `test5.bc` - Função com retorno (resultado: 10)
+### Basic Tests (based on the specification):
+- `test1.bc` - Basic operations with variables (result: 20)
+- `test2.bc` - If/else conditional structure (result: 1)
+- `test3.bc` - While loop structure (result: 5,4,3,2,1)
+- `test4.bc` - Function call with parameters (result: 7)
+- `test5.bc` - Function with return (result: 10)
 
-### Testes Especiais:
-- `test_input.bc` - Teste com entrada do usuário (READ)
-- `test_unoptimized.bc` - Código não otimizado para demonstrar otimizações
-- `test_optimized.bc` - Resultado da otimização
+### Special Tests:
+- `test_input.bc` - Test with user input (READ)
+- `test_unoptimized.bc` - Non-optimized code to demonstrate optimizations
+- `test_optimized.bc` - Result of optimization
 
-### Scripts de Teste:
-- `run_tests.py` - Script automatizado para executar todos os testes
-- `test_input_example.py` - Exemplo de como testar entrada interativa
+### Test Scripts:
+- `run_tests.py` - Automated script to run all tests
+- `test_input_example.py` - Example of how to test interactive input
 
-## Como Executar
+## How to Run
 
-### Executar um teste específico:
+### Run a specific test:
 ```bash
 cd ..
 python bytecode_interpreter.py tests/test1.bc
 ```
 
-### Executar todos os testes:
+### Run all tests:
 ```bash
 cd tests
 python run_tests.py
 ```
 
-### Testar entrada interativa:
+### Test interactive input:
 ```bash
 cd ..
 echo "5" | python bytecode_interpreter.py tests/test_input.bc
 ```
 
-### Testar otimizador:
+### Test optimizer:
 ```bash
 cd ..
 python bytecode_optimizer.py tests/test_unoptimized.bc tests/test_optimized_new.bc
 ```
 
-## Resultados Esperados
+## Expected Results
 
-| Teste | Resultado Esperado |
-|-------|-------------------|
+| Test | Expected Result |
+|------|----------------|
 | test1.bc | 20 |
 | test2.bc | 1 |
 | test3.bc | 5<br>4<br>3<br>2<br>1 |
 | test4.bc | 7 |
 | test5.bc | 10 |
-| test_input.bc (entrada: 5) | 25 |
+| test_input.bc (input: 5) | 25 |

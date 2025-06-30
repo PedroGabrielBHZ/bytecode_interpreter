@@ -1,17 +1,10 @@
-#!/usr/bin/env python3
-"""
-Script de teste para o interpretador bytecode
-"""
-
 import subprocess
 import sys
 import os
 
 
 def run_test(test_file, expected_output):
-    """Executa um teste e verifica o resultado"""
     try:
-        # Caminho para o interpretador no diretório pai
         interpreter_path = os.path.join("..", "bytecode_interpreter.py")
 
         result = subprocess.run(
@@ -39,7 +32,7 @@ def run_test(test_file, expected_output):
 
 
 def main():
-    """Executa todos os testes"""
+    """Runs all tests"""
     tests = [
         ("test1.bc", "20"),
         ("test2.bc", "1"),
@@ -48,7 +41,7 @@ def main():
         ("test5.bc", "10"),
     ]
 
-    print("Executando testes do interpretador bytecode...")
+    print("Running bytecode interpreter tests...")
     print("=" * 50)
 
     passed = 0
@@ -59,13 +52,13 @@ def main():
             passed += 1
 
     print("=" * 50)
-    print(f"Resultado: {passed}/{total} testes passaram")
+    print(f"Result: {passed}/{total} tests passed")
 
     if passed == total:
-        print("🎉 Todos os testes passaram!")
+        print("all tests pass")
         return 0
     else:
-        print("❌ Alguns testes falharam.")
+        print("some tests failed")
         return 1
 
 
