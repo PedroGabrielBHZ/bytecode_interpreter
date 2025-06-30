@@ -20,33 +20,31 @@ class BytecodeOptimizer:
             - Populates self.instructions with the parsed instructions, preserving line positions.
             - Populates self.labels with label names mapped to their corresponding line indices.
         Notes:
-            - Lines that are empty or start with '#' (comments) are ignored in execution but preserved as empty strings in instructions.
-            - Labels (lines ending with ':') are recorded in self.labels and also stored as empty strings in instructions to maintain line alignment.
+            - Lines that are empty or start with '#' (comments) are preserved as empty strings in instructions.
+            - Labels (lines ending with ':') are recorded in self.labels and preserved in instructions.
         """
         lines = bytecode.strip().split("\n")
         self.instructions = []
         self.labels = {}
 
         for i, line in enumerate(lines):
-            line = line.strip()
+            stripped = line.strip()
 
-            if not line or line.startswith("#"):
-                self.instructions.append("")
+            if not stripped or stripped.startswith("#"):
+                self.instructions.append(line)
                 continue
 
-            if line.endswith(":"):
-                label_name = line[:-1].strip()
+            if stripped.endswith(":"):
+                label_name = stripped[:-1].strip()
                 self.labels[label_name] = i
-                self.instructions.append("")
+                self.instructions.append(line)  # Preserve the actual label line
             else:
-                self.instructions.append(line)
+                self.instructions.append(stripped)
 
     def optimize_push_pop(self) -> int:
         """
         Optimizes the instruction list by removing consecutive "PUSH <value>" followed by "POP" instructions.
-
-        This method scans through the list of instructions and eliminates any pair where a "PUSH" instruction
-        is immediately followed by a "POP" instruction, as this sequence has no effect on the stack.
+        Preserves all label lines and comments.
 
         Returns:
             int: The total number of instructions removed from the list (counting both "PUSH" and "POP" instructions).
@@ -55,14 +53,25 @@ class BytecodeOptimizer:
         i = 0
         removed_count = 0
         while i < len(self.instructions):
-            current = self.instructions[i].strip()
+            current = self.instructions[i]
+            current_stripped = current.strip()
+            # Always preserve labels, comments, and blank lines
+            if (
+                current_stripped == ""
+                or current_stripped.startswith("#")
+                or current_stripped.endswith(":")
+            ):
+                optimized.append(current)
+                i += 1
+                continue
             if i + 1 < len(self.instructions):
-                next_instr = self.instructions[i + 1].strip()
-                if current.startswith("PUSH ") and next_instr == "POP":
+                next_instr = self.instructions[i + 1]
+                next_stripped = next_instr.strip()
+                if current_stripped.startswith("PUSH ") and next_stripped == "POP":
                     removed_count += 2
                     i += 2
                     continue
-            optimized.append(self.instructions[i])
+            optimized.append(current)
             i += 1
         self.instructions = optimized
         return removed_count
@@ -70,11 +79,7 @@ class BytecodeOptimizer:
     def optimize_redundant_loads(self) -> int:
         """
         Optimizes redundant consecutive LOAD instructions in the instruction list.
-
-        This method scans through the list of instructions and replaces consecutive
-        LOAD operations for the same variable with a single LOAD followed by the appropriate
-        number of DUP instructions. This reduces redundant memory accesses by duplicating
-        the value on the stack instead of reloading it.
+        Preserves all label lines and comments.
 
         Returns:
             int: The number of redundant LOAD instructions removed.
@@ -83,26 +88,38 @@ class BytecodeOptimizer:
         i = 0
         removed_count = 0
         while i < len(self.instructions):
-            current = self.instructions[i].strip()
-            if current.startswith("LOAD "):
-                var_name = current.split()[1]
+            current = self.instructions[i]
+            current_stripped = current.strip()
+            # Always preserve labels, comments, and blank lines
+            if (
+                current_stripped == ""
+                or current_stripped.startswith("#")
+                or current_stripped.endswith(":")
+            ):
+                optimized.append(current)
+                i += 1
+                continue
+            if current_stripped.startswith("LOAD "):
+                var_name = current_stripped.split()[1]
                 j = i + 1
                 consecutive_loads = 0
+                # Skip over comments, blank lines, and labels
                 while j < len(self.instructions):
-                    next_instr = self.instructions[j].strip()
+                    next_instr = self.instructions[j]
+                    next_stripped = next_instr.strip()
                     if (
-                        next_instr == ""
-                        or next_instr.startswith("#")
-                        or next_instr.endswith(":")
+                        next_stripped == ""
+                        or next_stripped.startswith("#")
+                        or next_stripped.endswith(":")
                     ):
                         j += 1
                         continue
-                    elif next_instr == f"LOAD {var_name}":
+                    elif next_stripped == f"LOAD {var_name}":
                         consecutive_loads += 1
                         j += 1
                     else:
                         break
-                optimized.append(self.instructions[i])
+                optimized.append(current)
                 if consecutive_loads > 0:
                     for _ in range(consecutive_loads):
                         optimized.append("DUP")
@@ -111,7 +128,7 @@ class BytecodeOptimizer:
                 else:
                     i += 1
             else:
-                optimized.append(self.instructions[i])
+                optimized.append(current)
                 i += 1
         self.instructions = optimized
         return removed_count
