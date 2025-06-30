@@ -4,19 +4,24 @@ from typing import Tuple
 
 class BytecodeOptimizer:
     def __init__(self):
+        """
+        Initializes a new instance of the class, setting up an empty list for instructions
+        and an empty dictionary for labels.
+        """
         self.instructions = []
         self.labels = {}
 
     def load_program(self, bytecode: str) -> None:
         """
-        Parses a string of bytecode instructions, storing them as a list and mapping label names to their line indices.
-
+        Loads a bytecode program into the interpreter by parsing the given bytecode string.
         Args:
             bytecode (str): The bytecode program as a string, with each instruction or label on a separate line.
-
         Side Effects:
-            Updates self.instructions with the parsed instructions and labels.
-            Updates self.labels with mappings from label names to their corresponding line indices.
+            - Populates self.instructions with the parsed instructions, preserving line positions.
+            - Populates self.labels with label names mapped to their corresponding line indices.
+        Notes:
+            - Lines that are empty or start with '#' (comments) are ignored in execution but preserved as empty strings in instructions.
+            - Labels (lines ending with ':') are recorded in self.labels and also stored as empty strings in instructions to maintain line alignment.
         """
         lines = bytecode.strip().split("\n")
         self.instructions = []
