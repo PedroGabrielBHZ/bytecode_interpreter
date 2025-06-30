@@ -1,0 +1,3 @@
+# Test: Jump to undefined label
+JMP undefined_label
+HALT

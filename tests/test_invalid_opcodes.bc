@@ -1,0 +1,12 @@
+# Invalid opcodes and malformed instructions
+INVALID_OPCODE 42
+PUSH
+PUSH abc
+LOAD
+STORE
+JMP
+CALL
+# Missing operands for various instructions
+ADD 5 6    # ADD doesn't take operands
+SUB extra_param
+HALT multiple params

@@ -1,0 +1,5 @@
+# Test: Division by zero
+PUSH 10
+PUSH 0
+DIV        # Division by zero
+HALT

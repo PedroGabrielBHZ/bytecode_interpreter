@@ -1,0 +1,4 @@
+# Test: Program without HALT
+PUSH 42
+PRINT
+# Missing HALT - should the interpreter handle this?

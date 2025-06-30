@@ -1,0 +1,4 @@
+# Test: Stack underflow - arithmetic with insufficient operands
+PUSH 5
+ADD        # Only one operand on stack, needs two
+HALT

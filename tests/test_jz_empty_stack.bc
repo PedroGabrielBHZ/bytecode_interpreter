@@ -1,0 +1,3 @@
+# Test: Conditional jump with empty stack
+JZ missing_label       # No condition on stack
+HALT

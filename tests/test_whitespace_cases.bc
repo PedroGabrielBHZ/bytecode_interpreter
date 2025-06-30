@@ -1,0 +1,18 @@
+# Mixed case and whitespace handling
+  push   5   
+	ADD	
+    print    
+   HALT   
+
+# Labels with various formats
+weird:label:
+normal_label:
+LABEL_WITH_CAPS:
+123_numeric_label:
+
+# Instructions with extra whitespace
+PUSH     42     
+STORE        variable_name        
+LOAD    variable_name    
+PRINT
+HALT

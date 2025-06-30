@@ -1,0 +1,3 @@
+# Test: DUP on empty stack
+DUP
+HALT

@@ -1,0 +1,3 @@
+# Test: Call undefined function
+CALL undefined_function
+HALT

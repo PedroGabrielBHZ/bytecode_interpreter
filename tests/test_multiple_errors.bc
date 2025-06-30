@@ -1,0 +1,7 @@
+# Test: Multiple consecutive errors
+LOAD undefined1
+LOAD undefined2
+ADD
+PUSH 0
+DIV
+HALT

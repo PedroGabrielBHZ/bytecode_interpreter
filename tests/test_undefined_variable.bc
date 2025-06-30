@@ -1,0 +1,3 @@
+# Test: Load undefined variable
+LOAD undefined_var
+HALT

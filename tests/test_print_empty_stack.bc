@@ -1,0 +1,3 @@
+# Test: Print empty stack
+PRINT      # Nothing to print
+HALT

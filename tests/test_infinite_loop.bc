@@ -1,0 +1,5 @@
+# Infinite loop test - should be terminated by the interpreter
+infinite_loop:
+    PUSH 1
+    JMP infinite_loop
+HALT

@@ -1,0 +1,10 @@
+# Test: Complex label and jump scenarios
+PUSH 1
+JZ skip_this
+PUSH 2
+JNZ go_to_end
+skip_this:
+PUSH 3
+go_to_end:
+PRINT
+HALT

@@ -1,0 +1,7 @@
+# Test: Negative number operations
+PUSH -100
+PUSH -200
+ADD
+NEG
+PRINT
+HALT

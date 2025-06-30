@@ -1,0 +1,204 @@
+# Comprehensive Edge Cases for Bytecode Interpreter Testing
+# These test cases are designed to stress-test the interpreter's error handling
+
+# ==================== STACK UNDERFLOW SCENARIOS ====================
+
+# Test 1: Arithmetic operations with insufficient stack elements
+# Expected: Should handle gracefully (error or crash)
+PUSH 5
+ADD        # Only one operand on stack, needs two
+HALT
+
+# Test 2: Empty stack arithmetic
+SUB        # No operands on stack
+HALT
+
+# Test 3: Single operand for two-operand operations
+PUSH 10
+MUL        # Only one operand
+HALT
+
+# Test 4: Division by zero
+PUSH 10
+PUSH 0
+DIV        # Division by zero
+HALT
+
+# Test 5: Modulo by zero
+PUSH 15
+PUSH 0
+MOD        # Modulo by zero
+HALT
+
+# ==================== VARIABLE OPERATIONS ====================
+
+# Test 6: Load undefined variable
+LOAD undefined_var
+HALT
+
+# Test 7: Store to invalid variable name
+PUSH 42
+STORE ""   # Empty variable name
+HALT
+
+# Test 8: Complex variable operations
+PUSH 100
+STORE var1
+LOAD var1
+LOAD nonexistent_var2  # Should fail
+ADD
+HALT
+
+# ==================== CONTROL FLOW EDGE CASES ====================
+
+# Test 9: Jump to undefined label
+JMP undefined_label
+HALT
+
+# Test 10: Conditional jump with empty stack
+JZ missing_label       # No condition on stack
+HALT
+
+# Test 11: Conditional jump to undefined label
+PUSH 0
+JZ undefined_target
+HALT
+
+# Test 12: Jump to invalid line number (if numeric jumps supported)
+JMP -1
+HALT
+
+# Test 13: Nested jumps and labels
+PUSH 1
+JZ skip1
+    JMP nested_jump
+    skip1:
+        PUSH 2
+        JZ skip2
+        nested_jump:
+            PUSH 3
+            JMP undefined_nested
+        skip2:
+HALT
+
+# ==================== FUNCTION CALL EDGE CASES ====================
+
+# Test 14: Call undefined function
+CALL undefined_function
+HALT
+
+# Test 15: Return without call
+RET
+HALT
+
+# Test 16: Excessive nested calls (stack overflow simulation)
+PUSH 1000
+STORE counter
+recursive_func:
+    LOAD counter
+    PUSH 1
+    SUB
+    STORE counter
+    LOAD counter
+    JZ end_recursion
+    CALL recursive_func   # Deep recursion
+    JMP recursive_func
+end_recursion:
+    RET
+HALT
+
+# Test 17: Multiple returns
+CALL test_func
+HALT
+test_func:
+    RET
+    RET        # Second return should be unreachable
+    HALT
+
+# ==================== STACK MANIPULATION EDGE CASES ====================
+
+# Test 18: DUP on empty stack
+DUP
+HALT
+
+# Test 19: SWAP with insufficient elements
+PUSH 5
+SWAP       # Only one element, needs two
+HALT
+
+# Test 20: SWAP on empty stack
+SWAP
+HALT
+
+# Test 21: Excessive stack operations
+PUSH 1
+DUP
+DUP
+DUP
+SWAP
+SWAP
+ADD
+SUB
+MUL
+DIV
+MOD
+HALT
+
+# ==================== INPUT/OUTPUT EDGE CASES ====================
+
+# Test 22: Print empty stack
+PRINT      # Nothing to print
+HALT
+
+# Test 23: Read into invalid variable
+READ ""    # Empty variable name
+HALT
+
+# Test 24: Multiple consecutive operations
+READ input1
+READ input2
+LOAD input1
+LOAD input2
+ADD
+PRINT
+LOAD nonexistent
+PRINT
+HALT
+
+# ==================== EXTREME VALUES ====================
+
+# Test 25: Very large numbers
+PUSH 999999999999999999999999999999
+PUSH 999999999999999999999999999999
+ADD
+HALT
+
+# Test 26: Negative numbers and operations
+PUSH -100
+PUSH -200
+ADD
+PUSH 0
+SUB        # Should result in positive
+HALT
+
+# Test 27: Zero operations
+PUSH 0
+PUSH 0
+ADD
+DIV        # 0/0 case
+HALT
+
+# ==================== MALFORMED PROGRAM SCENARIOS ====================
+
+# Test 28: Program without HALT
+PUSH 42
+PRINT
+# Missing HALT - should the interpreter handle this?
+
+# Test 29: Empty program (handled by separate file)
+
+# Test 30: Only comments and whitespace
+# This is a comment
+   # Another comment
+		# Indented comment
+# No actual instructions

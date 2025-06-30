@@ -1,0 +1,3 @@
+# Test: Arithmetic on empty stack
+SUB        # No operands on stack
+HALT

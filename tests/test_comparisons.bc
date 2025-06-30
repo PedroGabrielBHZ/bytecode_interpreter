@@ -1,0 +1,32 @@
+# Test: All comparison operations with edge values
+PUSH 0
+PUSH 0
+EQ
+PRINT
+
+PUSH 1
+PUSH 0
+NEQ
+PRINT
+
+PUSH -1
+PUSH 0
+LT
+PRINT
+
+PUSH 1
+PUSH 0
+GT
+PRINT
+
+PUSH 0
+PUSH 0
+LE
+PRINT
+
+PUSH 0
+PUSH 0
+GE
+PRINT
+
+HALT

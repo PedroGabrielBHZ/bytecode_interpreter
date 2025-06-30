@@ -1,0 +1,6 @@
+# Test: Large numbers
+PUSH 999999999
+PUSH 999999999
+MUL
+PRINT
+HALT

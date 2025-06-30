@@ -1,0 +1,14 @@
+# Test: Nested function calls with stack operations
+CALL func1
+PRINT
+HALT
+
+func1:
+    PUSH 10
+    CALL func2
+    ADD
+    RET
+
+func2:
+    PUSH 5
+    RET

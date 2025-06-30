@@ -1,0 +1,5 @@
+# Test: Modulo by zero
+PUSH 15
+PUSH 0
+MOD        # Modulo by zero
+HALT
